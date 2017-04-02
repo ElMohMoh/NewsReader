@@ -9,6 +9,8 @@ import static com.example.mohamed.newsreader.R.id.list;
 
 public class MainActivity extends AppCompatActivity {
 
+    private XMLAsyncTask task = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,9 +18,21 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView rv = (RecyclerView) findViewById(list);
 
+        MyAdapter adapter = new MyAdapter();
         rv.setLayoutManager(new LinearLayoutManager(this));
-        rv.setAdapter(new MyAdapter());
+        rv.setAdapter(adapter);
+
+        XMLAsyncTask task = new XMLAsyncTask(adapter);
+        task.execute("https://fr.wikipedia.org/w/api.php?hidebots=1&days=7&limit=50&hideWikibase=1&action=feedrecentchanges&feedformat=rss");
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(task !=null){
+            task.cancel(true);
+        }
+    }
 }
